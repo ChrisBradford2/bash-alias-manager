@@ -1,0 +1,9 @@
+Package: add-alias
+Version: 1.0
+Section: utils
+Priority: optional
+Architecture: all
+Depends: bash
+Maintainer: Ton Nom <nico.bar2012@gmail.com>
+Description: Un outil pour gérer les alias
+ Ce script permet d'ajouter des alias dans des fichiers définis

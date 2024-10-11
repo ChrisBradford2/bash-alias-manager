@@ -1,0 +1,67 @@
+#!/bin/bash
+
+if [[ "$1" == "--help" ]]; then
+    echo "Usage: add_alias --alias-name <nom_alias> --command <commande> [--file <fichier>]"
+    echo " - --alias-name : Le nom de l'alias à ajouter."
+    echo " - --command : La commande associée à l'alias."
+    echo " - --file : Le fichier d'alias dans ~/.aliases (facultatif)."
+    echo "Si aucun fichier n'est précisé, vous serez invité à en choisir un."
+    exit 0
+fi
+
+aliasname=""
+aliascommand=""
+aliasfile=""
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --alias-name)
+            aliasname="$2"
+            shift 2 # Passer au prochain argument
+            ;;
+        --command)
+            aliascommand="$2"
+            shift 2
+            ;;
+        --file)
+            aliasfile="$2"
+            shift 2
+            ;;
+        *)
+            echo "Option inconnue : $1"
+            exit 1
+            ;;
+    esac
+done
+
+if [ -z "$aliasname" ]; then
+    read -p "Entrez le nom de l'alias : " aliasname
+fi
+
+if [ -z "$aliascommand" ]; then
+    read -p "Entrez la commande associée à cet alias : " aliascommand
+fi
+
+if [ -z "$aliasfile" ]; then
+    echo "Fichiers disponibles dans ~/.aliases :"
+    select aliasfile in "$HOME/.aliases/"*; do
+        if [ -n "$aliasfile" ]; then
+            echo "Fichier sélectionné : $aliasfile"
+            break
+        else
+            echo "Sélection invalide, veuillez réessayer."
+        fi
+    done
+else
+    aliasfile="$HOME/.aliases/$aliasfile"
+    if [ ! -f "$aliasfile" ]; then
+        echo "Le fichier $aliasfile n'existe pas. Veuillez entrer un fichier valide."
+        exit 1
+    fi
+fi
+
+echo "alias $aliasname=\"$aliascommand\"" >> "$aliasfile"
+echo "Alias ajouté à $aliasfile : alias $aliasname=\"$aliascommand\""
+
+source ~/.bashrc
+echo "Fichier ~/.bashrc rechargé."
